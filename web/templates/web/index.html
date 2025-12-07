@@ -1,0 +1,305 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dulces Anylonso | Repostería con Amor</title>
+
+    <meta name="description"
+        content="Dulces Anylonso: Tortas caseras y repostería artesanal en Santiago. Ingredientes frescos y diseños personalizados para cumpleaños y eventos.">
+    <meta name="keywords" content="tortas, pasteleria, santiago, casero, cumpleaños, cupcakes, anylonso">
+    <meta name="author" content="Dulces Anylonso">
+
+    <meta property="og:title" content="Dulces Anylonso - Repostería con Amor">
+    <meta property="og:description" content="Las mejores tortas caseras de Santiago. ¡Cotiza la tuya hoy!">
+    <meta property="og:image" content="{% static 'web/img/tu_mejor_torta.jpg' %}">
+
+    <link rel="shortcut icon" href="{% static 'web/img/favicon.png' %}" type="image/png">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'web/css/style.css' %}">
+</head>
+
+<body>
+
+    {% if messages %}
+    <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+            <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <header>
+        <nav>
+            <div class="logo">Dulces Anylonso</div>
+            <div class="menu-toggle" id="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#hero">Inicio</a></li>
+                <li><a href="#features">Por qué Nosotros</a></li>
+                <li><a href="#gallery">Menú</a></li>
+                <li><a href="#process">Cómo Pedir</a></li>
+                <li><a href="#footer-contact" class="btn-nav">Cotizar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="hero" class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="badge">100% Casero</span>
+            <h1>Momentos Dulces,<br>Recuerdos Inolvidables</h1>
+            <p>Creamos tortas personalizadas que no solo se ven increíbles, sino que saben a hogar.</p>
+            <div class="hero-buttons">
+                <a href="#gallery" class="btn btn-primary">Ver Delicias</a>
+                <a href="#footer-contact" class="btn btn-outline">Hacer Pedido</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="feature-card">
+                <i class="fas fa-heart"></i>
+                <h3>Hecho con Amor</h3>
+                <p>Cada torta es única y preparada especialmente para ti.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-leaf"></i>
+                <h3>Ingredientes Frescos</h3>
+                <p>Sin pre-mezclas. Usamos mantequilla real, fruta fresca y el mejor chocolate.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-birthday-cake"></i>
+                <h3>Diseño Personalizado</h3>
+                <p>Tú lo sueñas, nosotros lo horneamos. Temáticas para toda ocasión.</p>
+            </div>
+        </div>
+    </section>
+
+    </section>
+
+    <section id="testimonials" class="testimonials">
+        <div class="section-header">
+            <span class="subtitle">Clientes Felices</span>
+            <h2 class="section-title">Lo que dicen de nosotros</h2>
+            <div class="separator"></div>
+        </div>
+
+        <div class="testimonial-grid">
+            {% for t in testimonios %}
+            <div class="testimonial-card">
+                <div class="stars">
+                    {% for i in t.get_estrellas %}
+                    <i class="fas fa-star"></i>
+                    {% endfor %}
+                </div>
+                <p class="testimonial-text">"{{ t.mensaje }}"</p>
+                <div class="testimonial-author">
+                    <div class="avatar-placeholder">
+                        {{ t.nombre|slice:":1" }} </div>
+                    <span>{{ t.nombre }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; width: 100%;">Aún no hay testimonios, ¡sé el primero!</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="gallery" class="gallery">
+        <div class="section-header">
+            <span class="subtitle">Nuestro Catálogo</span>
+            <h2 class="section-title">Las Favoritas</h2>
+            <div class="separator"></div>
+        </div>
+
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            {% for cat in categorias %}
+            <button class="filter-btn" data-filter="{{ cat.slug }}">{{ cat.nombre }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="grid">
+            {% for torta in tortas %}
+            <div class="card open-modal" data-category="{{ torta.categoria.slug|default:'sin-categoria' }}"
+                data-nombre="{{ torta.nombre }}" data-desc="{{ torta.descripcion }}" data-img="{{ torta.imagen.url }}"
+                data-precio="{% if torta.precio %}{{ torta.precio }}{% endif %}">
+
+                <div class="card-image">
+                    <img src="{{ torta.imagen.url }}" alt="{{ torta.nombre }}">
+                    <span class="tag">
+                        {{ torta.categoria.nombre|default:"Destacado" }}
+                    </span>
+                </div>
+
+                <div class="card-info">
+                    <h3>{{ torta.nombre }}</h3>
+                    <p class="desc">{{ torta.descripcion|truncatechars:60 }}</p>
+
+                    <div class="card-footer">
+                        {% if torta.precio %}
+                        <span class="price">${{ torta.precio }}</span>
+                        {% endif %}
+                        <span class="btn-card-text">Ver más <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Estamos horneando nuevas ideas. Vuelve pronto.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="process" class="process">
+        <div class="section-header">
+            <h2 class="section-title">¿Cómo hacer tu pedido?</h2>
+        </div>
+        <div class="process-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h4>Elige tu Diseño</h4>
+                <p>Inspírate en nuestro catálogo o envíanos tu idea.</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h4>Cotiza y Reserva</h4>
+                <p>Escríbenos por WhatsApp o formulario para agendar.</p>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h4>Disfruta</h4>
+                <p>Retira tu pedido o espéralo en casa y celebra.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer-contact">
+        <div class="footer-container">
+            <div class="footer-info">
+                <div class="logo-footer">Dulces Anylonso</div>
+                <p>Repostería artesanal para endulzar tus mejores momentos. Ubicados en Santiago.</p>
+                <div class="contact-details">
+                    <p><i class="fas fa-map-marker-alt"></i> Santiago, Chile</p>
+                    <p><i class="fab fa-whatsapp"></i> +56 9 5779 6610</p>
+                    <p><i class="fas fa-envelope"></i> dulcesanylonso@gmail.com</p>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/dulces_anylonso" target="_blank"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-form">
+                <h3>Escríbenos</h3>
+                <form method="POST" action="{% url 'procesar_contacto' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.nombre }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.mensaje }}
+                    </div>
+                    <button type="submit" class="btn btn-submit">Enviar Mensaje</button>
+                </form>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Dulces Anylonso. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/56957796610" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <div id="tortaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+
+            <div class="modal-body">
+                <div class="modal-img-container">
+                    <img id="modal-img" src="" alt="Detalle Torta">
+                </div>
+
+                <div class="modal-info">
+                    <h2 id="modal-title">Nombre Torta</h2>
+                    <p id="modal-desc">Descripción completa...</p>
+
+                    <div class="modal-price-box">
+                        <span id="modal-price" class="modal-price"></span>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button id="add-to-cart" class="btn btn-outline btn-block">
+                            <i class="fas fa-cart-plus"></i> Agregar a la lista
+                        </button>
+
+                        <a id="modal-whatsapp" href="#" target="_blank" class="btn btn-primary btn-block">
+                            <i class="fab fa-whatsapp"></i> Pedir solo esta
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-float" class="cart-float">
+        <i class="fas fa-shopping-basket"></i>
+        <span id="cart-count" class="cart-count">0</span>
+    </div>
+
+    <div id="cart-overlay" class="cart-overlay"></div>
+
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Tu Cotización</h3>
+
+            <button id="clear-cart-btn" class="clear-cart-btn" title="Vaciar toda la lista">
+                <i class="fas fa-trash-alt"></i> Vaciar
+            </button>
+
+            <span id="close-cart" class="close-cart">&times;</span>
+        </div>
+
+        <div class="cart-items" id="cart-items-container">
+            <p class="empty-cart-msg">Tu lista está vacía.</p>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total Aprox:</span>
+                <span id="cart-total-price">$0</span>
+            </div>
+            <button id="checkout-btn" class="btn btn-primary btn-block">
+                <i class="fab fa-whatsapp"></i> Cotizar Todo
+            </button>
+        </div>
+    </div>
+
+    <script src="{% static 'web/js/script.js' %}"></script>
+</body>
+
+</html>
